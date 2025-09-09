@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini Metro Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            <div id="topBar">
+                <div id="clock">
+                    <div class="clock-circle"></div>
+                    <div class="clock-progress"></div>
+                    <div class="clock-text">W1<br>M</div>
+                </div>
+                <div id="resources">
+                    <div class="resource-item" id="trainsResource" draggable="true">
+                        <span class="resource-icon">🚂</span>
+                        <span id="trainsCount">3</span>
+                    </div>
+                    <div class="resource-item" id="carriagesResource" style="display: none;" draggable="true">
+                        <span class="resource-icon">🚃</span>
+                        <span id="carriagesCount">0</span>
+                    </div>
+                    <div class="resource-item" id="interchangesResource" style="display: none;">
+                        <span class="resource-icon">⭕</span>
+                        <span id="interchangesCount">0</span>
+                    </div>
+                    <div class="resource-item" id="bridgesResource" style="display: none;">
+                        <span class="resource-icon">🌉</span>
+                        <span id="bridgesCount">2</span>
+                    </div>
+                </div>
+                <div id="controls">
+                    <div class="control-btn" id="pauseBtn">⏸</div>
+                    <div class="control-btn" id="speedBtn">▶</div>
+                </div>
+            </div>
+            
+            <div id="score">0</div>
+            
+            <div id="lineSelector"></div>
+            
+            <div id="upgradeModal">
+                <div class="upgrade-container">
+                    <div class="upgrade-title">Choose Upgrade</div>
+                    <div class="upgrade-choices"></div>
+                </div>
+            </div>
+            
+            <div id="gameOverModal">
+                <div class="gameover-container">
+                    <div class="gameover-title">Metro Closed</div>
+                    <div class="gameover-stats"></div>
+                    <button class="restart-btn">Play Again</button>
+                </div>
+            </div>
+            
+            <div id="startScreen">
+                <div class="start-container">
+                    <div class="game-title">MINI METRO</div>
+                    <div class="game-subtitle">Design the subway system</div>
+                    <div class="city-select">
+                        <div class="city-label">Select City</div>
+                        <div class="city-grid">
+                            <button class="city-btn selected" data-city="london">London</button>
+                            <button class="city-btn" data-city="paris">Paris</button>
+                            <button class="city-btn" data-city="newyork">New York</button>
+                            <button class="city-btn" data-city="tokyo">Tokyo</button>
+                        </div>
+                    </div>
+                    <button class="start-btn">START</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
