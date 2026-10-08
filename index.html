@@ -35,10 +35,75 @@
                     </div>
                 </div>
                 <div id="controls">
+                    <button class="control-btn cheat-menu-btn" id="cheatMenuBtn" type="button" title="Cheat menu" aria-label="Open cheat menu">⚡</button>
                     <div class="control-btn" id="pauseBtn">⏸</div>
                     <div class="control-btn" id="speedBtn">▶</div>
                 </div>
             </div>
+
+            <div id="cheatIndicator" aria-live="polite"></div>
+
+            <div id="cheatOverlay" aria-hidden="true">
+                <div class="cheat-backdrop" data-close-cheats></div>
+                <aside class="cheat-panel" role="dialog" aria-modal="false" aria-labelledby="cheatTitle">
+                    <div class="cheat-header">
+                        <div>
+                            <div class="cheat-kicker">SANDBOX</div>
+                            <h2 id="cheatTitle">Читы</h2>
+                        </div>
+                        <button class="cheat-close" type="button" data-close-cheats aria-label="Закрыть">&times;</button>
+                    </div>
+
+                    <p class="cheat-intro">Меняйте правила прямо во время игры. Прогресс и счёт сохраняются.</p>
+
+                    <div class="cheat-section-title">Режимы</div>
+                    <label class="cheat-toggle-row">
+                        <span class="cheat-copy">
+                            <strong>Бесконечная игра</strong>
+                            <small>Переполненные станции больше не закрывают метро.</small>
+                        </span>
+                        <input type="checkbox" data-cheat="endlessMode">
+                        <span class="cheat-switch" aria-hidden="true"></span>
+                    </label>
+                    <label class="cheat-toggle-row">
+                        <span class="cheat-copy">
+                            <strong>Заморозить календарь</strong>
+                            <small>Недели стоят на месте, но поезда и пассажиры продолжают двигаться.</small>
+                        </span>
+                        <input type="checkbox" data-cheat="freezeCalendar">
+                        <span class="cheat-switch" aria-hidden="true"></span>
+                    </label>
+                    <label class="cheat-toggle-row">
+                        <span class="cheat-copy">
+                            <strong>Турбо-поезда</strong>
+                            <small>Весь парк движется вдвое быстрее.</small>
+                        </span>
+                        <input type="checkbox" data-cheat="turboTrains">
+                        <span class="cheat-switch" aria-hidden="true"></span>
+                    </label>
+
+                    <div class="cheat-section-title">Быстрые команды</div>
+                    <div class="cheat-actions">
+                        <button type="button" data-cheat-action="resources">
+                            <span>＋</span>
+                            <strong>Пополнить запасы</strong>
+                            <small>+5 поездов, вагонов и мостов</small>
+                        </button>
+                        <button type="button" data-cheat-action="unlockLines">
+                            <span>●</span>
+                            <strong>Открыть все линии</strong>
+                            <small>Все линии города сразу доступны</small>
+                        </button>
+                        <button type="button" data-cheat-action="clearStations">
+                            <span>✓</span>
+                            <strong>Разгрузить станции</strong>
+                            <small>Мгновенно доставить ожидающих</small>
+                        </button>
+                    </div>
+                </aside>
+            </div>
+
+            <div id="cheatToast" role="status" aria-live="polite"></div>
             
             <div id="score">0</div>
             

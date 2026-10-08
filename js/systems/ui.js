@@ -1,6 +1,5 @@
 import { CONFIG } from '../config.js';
 import { gameState, setGameState } from '../state.js';
-import { Train } from '../components/train.js';
 
 export function showUpgradeChoices() {
     const upgrades = ['line', 'tunnel', 'carriage', 'interchange'];
@@ -51,7 +50,7 @@ function selectUpgrade(upgrade) {
 }
 
 export function updateUI() {
-    const elapsed = Date.now() - gameState.weekStartTime;
+    const elapsed = gameState.weekElapsed;
     const progress = (elapsed % CONFIG.WEEK_DURATION) / CONFIG.WEEK_DURATION;
     const days = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
     document.querySelector('.clock-text').innerHTML = `W${gameState.week}<br>${days[gameState.day]}`;
@@ -66,7 +65,126 @@ export function updateUI() {
 
     const speedBtn = document.getElementById('speedBtn');
     speedBtn.textContent = gameState.speed === 1 ? '▶' : '⏩';
+    speedBtn.classList.toggle('active', gameState.speed !== 1);
+    document.getElementById('pauseBtn').textContent = gameState.paused ? '▶' : '⏸';
+    updateCheatDisplay();
     updateResourceDisplay();
+}
+
+let cheatToastTimer = null;
+
+export function initCheatMenu() {
+    const overlay = document.getElementById('cheatOverlay');
+    const menuButton = document.getElementById('cheatMenuBtn');
+
+    const setOpen = (isOpen) => {
+        overlay.classList.toggle('show', isOpen);
+        overlay.setAttribute('aria-hidden', String(!isOpen));
+        menuButton.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    menuButton.addEventListener('click', () => setOpen(!overlay.classList.contains('show')));
+    overlay.querySelectorAll('[data-close-cheats]').forEach(element => {
+        element.addEventListener('click', () => setOpen(false));
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') setOpen(false);
+    });
+
+    overlay.querySelectorAll('[data-cheat]').forEach(input => {
+        input.addEventListener('change', () => {
+            const cheat = input.dataset.cheat;
+            gameState.cheats[cheat] = input.checked;
+
+            if (cheat === 'endlessMode' && !input.checked) {
+                const now = Date.now();
+                gameState.stations.forEach(station => {
+                    if (station.passengers.length > station.capacity) station.overcrowdStartTime = now;
+                });
+            }
+
+            const label = input.closest('.cheat-toggle-row').querySelector('strong').textContent;
+            showCheatToast(`${label}: ${input.checked ? 'включено' : 'выключено'}`);
+            updateCheatDisplay();
+        });
+    });
+
+    overlay.querySelectorAll('[data-cheat-action]').forEach(button => {
+        button.addEventListener('click', () => runCheatAction(button.dataset.cheatAction));
+    });
+
+    syncCheatMenu();
+}
+
+function runCheatAction(action) {
+    if (action === 'resources') {
+        setGameState({
+            availableTrains: gameState.availableTrains + 5,
+            carriages: gameState.carriages + 5,
+            bridges: gameState.bridges + 5,
+            interchanges: gameState.interchanges + 2
+        });
+        showCheatToast('Запасы пополнены');
+    }
+
+    if (action === 'unlockLines') {
+        const newlyUnlocked = Math.max(0, gameState.maxLines - gameState.availableLines);
+        setGameState({
+            availableLines: gameState.maxLines,
+            availableTrains: gameState.availableTrains + newlyUnlocked
+        });
+        createLineSelector();
+        showCheatToast(newlyUnlocked ? 'Все линии открыты' : 'Все линии уже открыты');
+    }
+
+    if (action === 'clearStations') {
+        const evacuated = gameState.stations.reduce((total, station) => total + station.passengers.length, 0);
+        if (evacuated > 0) {
+            const waitingPassengers = new Set(gameState.stations.flatMap(station => station.passengers));
+            gameState.stations.forEach(station => {
+                station.passengers = [];
+                station.overcrowdStartTime = null;
+            });
+            gameState.passengers = gameState.passengers.filter(passenger => !waitingPassengers.has(passenger));
+            setGameState({
+                score: gameState.score + evacuated,
+                passengersDelivered: gameState.passengersDelivered + evacuated
+            });
+        }
+        showCheatToast(evacuated ? `Доставлено пассажиров: ${evacuated}` : 'Станции уже свободны');
+    }
+
+    updateResourceDisplay();
+    updateUI();
+}
+
+function syncCheatMenu() {
+    document.querySelectorAll('[data-cheat]').forEach(input => {
+        input.checked = Boolean(gameState.cheats[input.dataset.cheat]);
+    });
+    updateCheatDisplay();
+}
+
+function updateCheatDisplay() {
+    const indicator = document.getElementById('cheatIndicator');
+    const menuButton = document.getElementById('cheatMenuBtn');
+    const activeCheats = Object.values(gameState.cheats).filter(Boolean).length;
+
+    document.querySelectorAll('[data-cheat]').forEach(input => {
+        input.checked = Boolean(gameState.cheats[input.dataset.cheat]);
+    });
+
+    indicator.textContent = activeCheats ? `⚡ Читы активны: ${activeCheats}` : '';
+    indicator.classList.toggle('show', activeCheats > 0);
+    menuButton.classList.toggle('active', activeCheats > 0);
+}
+
+function showCheatToast(message) {
+    const toast = document.getElementById('cheatToast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(cheatToastTimer);
+    cheatToastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
 }
 
 export function createLineSelector() {

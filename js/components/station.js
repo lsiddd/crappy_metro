@@ -20,7 +20,8 @@ export class Station {
     }
 
     addPassenger(passenger) {
-        if (this.passengers.length < 100) { // Absolute max
+        const absoluteMax = gameState.cheats.endlessMode ? 1000 : 100;
+        if (this.passengers.length < absoluteMax) {
             this.passengers.push(passenger);
             this.checkOvercrowd();
         }
@@ -56,7 +57,7 @@ export class Station {
          // --- Overcrowd Animation ---
         if (this.overcrowdStartTime) {
             const elapsed = Date.now() - this.overcrowdStartTime;
-            const progress = elapsed / CONFIG.OVERCROWD_TIME;
+            const progress = Math.min(elapsed / CONFIG.OVERCROWD_TIME, 1);
 
             // Pulsing glow
             ctx.shadowColor = 'rgba(211, 47, 47, 0.7)';
@@ -69,7 +70,7 @@ export class Station {
             ctx.fill();
 
             // Timer arc
-            ctx.strokeStyle = '#d32f2f';
+            ctx.strokeStyle = gameState.cheats.endlessMode && progress >= 1 ? '#7b4ce2' : '#d32f2f';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.arc(this.x, this.y, radius + 8, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2);
