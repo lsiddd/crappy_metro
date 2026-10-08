@@ -27,7 +27,14 @@ export let gameState = {
     stationIdCounter: 0,
     trainIdCounter: 0,
     passengersDelivered: 0,
-    gameStartTime: Date.now()
+    gameStartTime: Date.now(),
+    weekElapsed: 0,
+    playTime: 0,
+    cheats: {
+        endlessMode: false,
+        freezeCalendar: false,
+        turboTrains: false
+    }
 };
 
 export function resetState() {
@@ -38,11 +45,14 @@ export function resetState() {
         lines: [], trains: [], passengers: [], selectedLine: 0, gameOver: false,
         lastSpawnTime: Date.now(), lastStationSpawnTime: Date.now(), weekStartTime: Date.now(),
         stationIdCounter: 0, trainIdCounter: 0, passengersDelivered: 0, gameStartTime: Date.now(),
+        weekElapsed: 0, playTime: 0,
+        cheats: { endlessMode: false, freezeCalendar: false, turboTrains: false },
         bridges: cityConfig.bridges,
         maxLines: cityConfig.maxLines,
         availableLines: 3,
         availableTrains: 3,
         carriages: 0,
+        interchanges: 0,
     };
 }
 

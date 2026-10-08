@@ -106,7 +106,7 @@ export function spawnStation() {
     }
 
     let type;
-    const gameTime = Date.now() - gameState.gameStartTime;
+    const gameTime = gameState.playTime;
     const minutesPlayed = gameTime / 60000;
     
     const basicTypes = [STATION_TYPES.CIRCLE, STATION_TYPES.TRIANGLE, STATION_TYPES.SQUARE];
@@ -130,6 +130,8 @@ export function spawnStation() {
 }
 
 export function checkGameOver() {
+    if (gameState.cheats.endlessMode) return;
+
     for (const station of gameState.stations) {
         if (station.overcrowdStartTime) {
             if (Date.now() - station.overcrowdStartTime > CONFIG.OVERCROWD_TIME) {
@@ -142,7 +144,7 @@ export function checkGameOver() {
 
 function endGame() {
     setGameState({ gameOver: true, paused: true });
-    const gameTime = Date.now() - gameState.gameStartTime;
+    const gameTime = gameState.playTime;
     const days = Math.floor(gameTime / CONFIG.WEEK_DURATION * 7);
     const modal = document.getElementById('gameOverModal');
     const stats = modal.querySelector('.gameover-stats');

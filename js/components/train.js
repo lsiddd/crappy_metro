@@ -89,7 +89,8 @@ export class Train {
             this.speed = this.maxSpeed;
         }
 
-        this.progress += (this.speed * gameState.speed * (deltaTime/16.67)) / distance;
+        const cheatSpeed = gameState.cheats.turboTrains ? 2 : 1;
+        this.progress += (this.speed * gameState.speed * cheatSpeed * (deltaTime/16.67)) / distance;
         
         if (this.progress >= 1) {
             this.progress = 1;

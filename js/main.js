@@ -2,22 +2,34 @@ import { CONFIG } from './config.js';
 import { gameState, setGameState } from './state.js';
 import { resizeCanvas, ctx } from './utils.js';
 import { initGame, spawnPassenger, spawnStation, checkGameOver } from './systems/game.js';
-import { updateUI, showUpgradeChoices } from './systems/ui.js';
+import { updateUI, showUpgradeChoices, initCheatMenu } from './systems/ui.js';
 import { initInput, previewLine } from './systems/input.js';
 
 // Game Loop
 let lastTime = 0;
 function gameLoop(timestamp) {
     if (!lastTime) lastTime = timestamp;
-    const deltaTime = timestamp - lastTime;
+    const deltaTime = Math.min(timestamp - lastTime, 100);
     lastTime = timestamp;
     
     if (!gameState.gameOver) {
          if (!gameState.paused) {
-            const elapsed = Date.now() - gameState.weekStartTime;
-            setGameState({ day: Math.floor(elapsed / (CONFIG.WEEK_DURATION / 7)) % 7 });
-            if (elapsed > CONFIG.WEEK_DURATION) {
-                setGameState({ week: gameState.week + 1, weekStartTime: Date.now() });
+            setGameState({ playTime: gameState.playTime + deltaTime });
+
+            if (!gameState.cheats.freezeCalendar) {
+                const weekElapsed = gameState.weekElapsed + deltaTime;
+                setGameState({
+                    weekElapsed,
+                    day: Math.floor(weekElapsed / (CONFIG.WEEK_DURATION / 7)) % 7
+                });
+            }
+
+            if (gameState.weekElapsed >= CONFIG.WEEK_DURATION) {
+                setGameState({
+                    week: gameState.week + 1,
+                    weekElapsed: gameState.weekElapsed - CONFIG.WEEK_DURATION,
+                    day: 0
+                });
                 showUpgradeChoices();
             }
             // Progressive difficulty scaling
@@ -80,6 +92,7 @@ function gameLoop(timestamp) {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 initInput();
+initCheatMenu();
 
 // UI Listeners
 document.getElementById('pauseBtn').addEventListener('click', () => {
